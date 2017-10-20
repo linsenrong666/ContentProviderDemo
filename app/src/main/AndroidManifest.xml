@@ -18,6 +18,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+    
+        <provider
+            android:authorities=""
+            android:name=".data.TasksProvider"
+            android:exported="false"/>
 
     </application>
 

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.linsr.contentproviderdemo.R;
 import com.linsr.contentproviderdemo.gui.adapters.TasksAdapter;
 import com.linsr.contentproviderdemo.gui.widgets.ScrollChildSwipeRefreshLayout;
+import com.linsr.contentproviderdemo.logic.task.TaskManager;
 
 /**
  * Description
@@ -41,6 +42,8 @@ public class TasksFragment extends Fragment {
     private LinearLayout mTasksView;
 
     private TextView mFilteringLabelView;
+
+    private TaskManager mTaskManager;
 
     public static TasksFragment newInstance() {
 
@@ -70,7 +73,7 @@ public class TasksFragment extends Fragment {
         mNoTaskAddView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showAddTask();
+                addNewTask();
             }
         });
 
@@ -82,7 +85,7 @@ public class TasksFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mPresenter.addNewTask();
+                addNewTask();
             }
         });
 
@@ -100,32 +103,33 @@ public class TasksFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.loadTasks(false);
+                mTaskManager.loadTasks(false);
             }
         });
-
         setHasOptionsMenu(true);
-
         return root;
+    }
+
+    private void addNewTask() {
+
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_clear:
-                mPresenter.clearCompletedTasks();
+                mTaskManager.clearCompletedTasks();
                 break;
             case R.id.menu_filter:
                 showFilteringPopUpMenu();
                 break;
             case R.id.menu_refresh:
-                mPresenter.loadTasks(true);
+                mTaskManager.loadTasks(true);
                 break;
         }
         return true;
     }
 
-    @Override
     public void showFilteringPopUpMenu() {
         PopupMenu popup = new PopupMenu(getContext(), getActivity().findViewById(R.id.menu_filter));
         popup.getMenuInflater().inflate(R.menu.filter_tasks, popup.getMenu());
@@ -134,16 +138,16 @@ public class TasksFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.active:
-                        mPresenter.setFiltering(TasksFilterType.ACTIVE_TASKS);
+                        mTaskManager.setFiltering(TasksFilterType.ACTIVE_TASKS);
                         break;
                     case R.id.completed:
-                        mPresenter.setFiltering(TasksFilterType.COMPLETED_TASKS);
+                        mTaskManager.setFiltering(TasksFilterType.COMPLETED_TASKS);
                         break;
                     default:
-                        mPresenter.setFiltering(TasksFilterType.ALL_TASKS);
+                        mTaskManager.setFiltering(TasksFilterType.ALL_TASKS);
                         break;
                 }
-                mPresenter.loadTasks(false);
+                mTaskManager.loadTasks(false);
                 return true;
             }
         });

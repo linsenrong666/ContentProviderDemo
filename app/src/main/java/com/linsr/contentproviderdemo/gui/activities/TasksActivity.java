@@ -15,8 +15,7 @@ import com.linsr.contentproviderdemo.gui.fragments.TasksFragment;
 import com.linsr.contentproviderdemo.utils.ActivityUtils;
 
 /**
- * 借用google to-
- *
+ * 借用google to-do-mvp 项目
  *
  * @author linsenrong on 2017/10/19 17:13
  */
