@@ -18,9 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-    
+
+        <activity android:name=".gui.activities.AddEditTaskActivity"/>
+        <activity android:name=".gui.activities.StatisticsActivity"/>
+        <activity android:name=".gui.activities.TaskDetailActivity"/>
         <provider
-            android:authorities=""
+            android:authorities="com.linsr.contentproviderdemo.data.Tasks"
             android:name=".data.TasksProvider"
             android:exported="false"/>
 

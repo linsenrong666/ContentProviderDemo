@@ -1,6 +1,7 @@
 package com.linsr.contentproviderdemo.gui.fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -18,9 +19,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.linsr.contentproviderdemo.R;
+import com.linsr.contentproviderdemo.gui.activities.AddEditTaskActivity;
 import com.linsr.contentproviderdemo.gui.adapters.TasksAdapter;
 import com.linsr.contentproviderdemo.gui.widgets.ScrollChildSwipeRefreshLayout;
 import com.linsr.contentproviderdemo.logic.task.TaskManager;
+import com.linsr.contentproviderdemo.model.Task;
+
+import java.util.ArrayList;
 
 /**
  * Description
@@ -54,9 +59,16 @@ public class TasksFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mListAdapter = new TasksAdapter(new ArrayList<Task>(0),mItemListener);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        mTaskManager = TaskManager.getInstance();
         View root = inflater.inflate(R.layout.tasks_frag, container, false);
 
         // Set up tasks view
@@ -107,18 +119,20 @@ public class TasksFragment extends Fragment {
             }
         });
         setHasOptionsMenu(true);
+
         return root;
     }
 
     private void addNewTask() {
-
+        Intent intent = new Intent(getActivity(), AddEditTaskActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_clear:
-                mTaskManager.clearCompletedTasks();
+//                mTaskManager.clearCompletedTasks();
                 break;
             case R.id.menu_filter:
                 showFilteringPopUpMenu();
@@ -138,13 +152,13 @@ public class TasksFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.active:
-                        mTaskManager.setFiltering(TasksFilterType.ACTIVE_TASKS);
+//                        mTaskManager.setFiltering(TasksFilterType.ACTIVE_TASKS);
                         break;
                     case R.id.completed:
-                        mTaskManager.setFiltering(TasksFilterType.COMPLETED_TASKS);
+//                        mTaskManager.setFiltering(TasksFilterType.COMPLETED_TASKS);
                         break;
                     default:
-                        mTaskManager.setFiltering(TasksFilterType.ALL_TASKS);
+//                        mTaskManager.setFiltering(TasksFilterType.ALL_TASKS);
                         break;
                 }
                 mTaskManager.loadTasks(false);
@@ -154,4 +168,22 @@ public class TasksFragment extends Fragment {
 
         popup.show();
     }
+
+    TasksAdapter.TaskItemListener mItemListener = new TasksAdapter.TaskItemListener() {
+        @Override
+        public void onTaskClick(Task clickedTask) {
+//            mPresenter.openTaskDetails(clickedTask);
+        }
+
+        @Override
+        public void onCompleteTaskClick(Task completedTask) {
+//            mPresenter.completeTask(completedTask);
+        }
+
+        @Override
+        public void onActivateTaskClick(Task activatedTask) {
+//            mPresenter.activateTask(activatedTask);
+        }
+    };
+
 }

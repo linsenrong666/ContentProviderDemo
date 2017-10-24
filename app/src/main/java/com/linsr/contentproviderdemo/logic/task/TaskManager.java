@@ -7,4 +7,24 @@ package com.linsr.contentproviderdemo.logic.task;
  */
 
 public class TaskManager {
+    private TaskManager() {
+    }
+
+    private volatile static TaskManager mInstance;
+
+    public static TaskManager getInstance() {
+        if (mInstance != null) {
+            synchronized (TaskManager.class) {
+                if (mInstance != null) {
+                    mInstance = new TaskManager();
+                }
+            }
+        }
+        return mInstance;
+    }
+
+    public void loadTasks(boolean flag) {
+
+    }
+
 }

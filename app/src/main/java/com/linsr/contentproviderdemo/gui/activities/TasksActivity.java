@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.linsr.contentproviderdemo.R;
+import com.linsr.contentproviderdemo.base.BaseActivity;
 import com.linsr.contentproviderdemo.gui.fragments.TasksFragment;
 import com.linsr.contentproviderdemo.utils.ActivityUtils;
 
@@ -19,7 +20,7 @@ import com.linsr.contentproviderdemo.utils.ActivityUtils;
  *
  * @author linsenrong on 2017/10/19 17:13
  */
-public class TasksActivity extends AppCompatActivity {
+public class TasksActivity extends BaseActivity {
 
     private DrawerLayout mDrawerLayout;
 
