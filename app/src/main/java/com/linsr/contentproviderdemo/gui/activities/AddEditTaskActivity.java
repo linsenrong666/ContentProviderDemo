@@ -2,6 +2,7 @@ package com.linsr.contentproviderdemo.gui.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 
@@ -18,12 +19,15 @@ import com.linsr.contentproviderdemo.utils.ActivityUtils;
 
 public class AddEditTaskActivity extends BaseActivity {
 
+    public interface AddEditTaskListener{
+        void onClickAddDone();
+    }
     private ActionBar mActionBar;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.addtask_act);
-
         // Set up the toolbar.
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -31,6 +35,7 @@ public class AddEditTaskActivity extends BaseActivity {
         mActionBar.setDisplayHomeAsUpEnabled(true);
         mActionBar.setDisplayShowHomeEnabled(true);
 
+        //set fragment
         String taskId = getIntent().getStringExtra(AddEditTaskFragment.ARGUMENT_EDIT_TASK_ID);
 
         AddEditTaskFragment addEditTaskFragment = (AddEditTaskFragment) getSupportFragmentManager()

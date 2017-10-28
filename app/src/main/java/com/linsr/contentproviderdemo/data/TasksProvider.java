@@ -83,8 +83,8 @@ public class TasksProvider extends ContentProvider {
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(Tasks.AUTHORITY, "Tasks", TASK);
-        uriMatcher.addURI(Tasks.AUTHORITY, "Tasks/#", TASK_ID);
+        uriMatcher.addURI(Tasks.AUTHORITY, "Task", TASK);
+        uriMatcher.addURI(Tasks.AUTHORITY, "Task/#", TASK_ID);
 
         taskMaps = new HashMap<>();
         taskMaps.put(Tasks.Task._ID, Tasks.Task._ID);

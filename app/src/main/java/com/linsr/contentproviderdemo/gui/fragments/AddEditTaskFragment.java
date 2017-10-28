@@ -1,7 +1,9 @@
 package com.linsr.contentproviderdemo.gui.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.linsr.contentproviderdemo.R;
+import com.linsr.contentproviderdemo.logic.task.TaskManager;
 
 /**
  * Description
@@ -28,13 +31,42 @@ public class AddEditTaskFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+
     public AddEditTaskFragment() {
         // Required empty public constructor
     }
 
+    private String mTaskId;
+
     private TextView mTitle;
 
     private TextView mDescription;
+
+    private TaskManager mTaskManager;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mTaskId = getArguments().getString(ARGUMENT_EDIT_TASK_ID);
+        mTaskManager = TaskManager.getInstance();
+
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        FloatingActionButton actionButton =
+                (FloatingActionButton) getActivity().findViewById(R.id.fab_edit_task_done);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String title = mTitle.getText().toString();
+                String desc = mDescription.getText().toString();
+                mTaskManager.saveTask(mTaskId,title,desc);
+                getActivity().finish();
+            }
+        });
+    }
 
     @Nullable
     @Override

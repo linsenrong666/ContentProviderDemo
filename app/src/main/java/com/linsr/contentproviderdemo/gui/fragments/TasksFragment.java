@@ -2,11 +2,15 @@ package com.linsr.contentproviderdemo.gui.fragments;
 
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
@@ -19,6 +23,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.linsr.contentproviderdemo.R;
+import com.linsr.contentproviderdemo.data.Tasks;
+import com.linsr.contentproviderdemo.data.contacts.TaskContact;
 import com.linsr.contentproviderdemo.gui.activities.AddEditTaskActivity;
 import com.linsr.contentproviderdemo.gui.adapters.TasksAdapter;
 import com.linsr.contentproviderdemo.gui.widgets.ScrollChildSwipeRefreshLayout;
@@ -62,7 +68,7 @@ public class TasksFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mListAdapter = new TasksAdapter(new ArrayList<Task>(0),mItemListener);
+        mListAdapter = new TasksAdapter(new ArrayList<Task>(0), mItemListener);
     }
 
     @Nullable
@@ -120,7 +126,33 @@ public class TasksFragment extends Fragment {
         });
         setHasOptionsMenu(true);
 
+        //set loaderManager
+        getLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                return new CursorLoader(getActivity(), Tasks.Task.CONTENT_URI,
+                        TaskContact.TASK_PROJECTION,null,null,null);
+            }
+
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+            }
+
+            @Override
+            public void onLoaderReset(Loader<Cursor> loader) {
+
+            }
+        });
         return root;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (getLoaderManager() != null) {
+            getLoaderManager().destroyLoader(0);
+        }
     }
 
     private void addNewTask() {

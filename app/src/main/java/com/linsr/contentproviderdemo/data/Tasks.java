@@ -14,7 +14,8 @@ public class Tasks {
     public static final String AUTHORITY = "com.linsr.contentproviderdemo.data.Tasks";
 
     static class TasksBase {
-
+        public static final int NOT_COMPLETED = 1;
+        public static final int COMPLETED = 2;
     }
 
     public static class Task extends TasksBase implements TaskContact {
