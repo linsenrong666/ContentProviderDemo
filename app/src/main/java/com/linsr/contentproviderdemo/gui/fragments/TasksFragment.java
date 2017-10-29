@@ -14,6 +14,8 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +30,13 @@ import com.linsr.contentproviderdemo.data.contacts.TaskContact;
 import com.linsr.contentproviderdemo.gui.activities.AddEditTaskActivity;
 import com.linsr.contentproviderdemo.gui.adapters.TasksAdapter;
 import com.linsr.contentproviderdemo.gui.widgets.ScrollChildSwipeRefreshLayout;
+import com.linsr.contentproviderdemo.logic.task.TaskDataSource;
 import com.linsr.contentproviderdemo.logic.task.TaskManager;
+import com.linsr.contentproviderdemo.logic.task.TasksFilterType;
 import com.linsr.contentproviderdemo.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Description
@@ -39,6 +44,10 @@ import java.util.ArrayList;
  * @author linsenrong on 2017/10/19 17:15
  */
 public class TasksFragment extends Fragment {
+
+    private static final int EMPTY = 0;
+    private static final int ERROR = 1;
+    private static final int NORMAL = 2;
 
     private TasksAdapter mListAdapter;
 
@@ -55,6 +64,7 @@ public class TasksFragment extends Fragment {
     private TextView mFilteringLabelView;
 
     private TaskManager mTaskManager;
+    private TasksFilterType mCurrentFiltering = TasksFilterType.ALL_TASKS;
 
     public static TasksFragment newInstance() {
 
@@ -124,27 +134,30 @@ public class TasksFragment extends Fragment {
                 mTaskManager.loadTasks(false);
             }
         });
-        setHasOptionsMenu(true);
 
         //set loaderManager
-        getLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
-            @Override
-            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                return new CursorLoader(getActivity(), Tasks.Task.CONTENT_URI,
-                        TaskContact.TASK_PROJECTION,null,null,null);
-            }
+        getLoaderManager().initLoader(0, null, mLoaderCallbacks);
 
-            @Override
-            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-            }
-
-            @Override
-            public void onLoaderReset(Loader<Cursor> loader) {
-
-            }
-        });
+        setHasOptionsMenu(true);
         return root;
+    }
+
+    private void setUIStatus(int status) {
+        showFilterLabel();
+        switch (status) {
+            case NORMAL:
+                mNoTasksView.setVisibility(View.GONE);
+                mTasksView.setVisibility(View.VISIBLE);
+                break;
+            case ERROR:
+                mTasksView.setVisibility(View.GONE);
+                mNoTasksView.setVisibility(View.VISIBLE);
+                break;
+            case EMPTY:
+                mTasksView.setVisibility(View.GONE);
+                mNoTasksView.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     @Override
@@ -158,6 +171,11 @@ public class TasksFragment extends Fragment {
     private void addNewTask() {
         Intent intent = new Intent(getActivity(), AddEditTaskActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.tasks_fragment_menu, menu);
     }
 
     @Override
@@ -184,22 +202,79 @@ public class TasksFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.active:
-//                        mTaskManager.setFiltering(TasksFilterType.ACTIVE_TASKS);
+                        mCurrentFiltering = TasksFilterType.ACTIVE_TASKS;
                         break;
                     case R.id.completed:
-//                        mTaskManager.setFiltering(TasksFilterType.COMPLETED_TASKS);
+                        mCurrentFiltering = TasksFilterType.COMPLETED_TASKS;
                         break;
                     default:
-//                        mTaskManager.setFiltering(TasksFilterType.ALL_TASKS);
+                        mCurrentFiltering = TasksFilterType.ALL_TASKS;
                         break;
                 }
-                mTaskManager.loadTasks(false);
+                getLoaderManager().restartLoader(0, null, mLoaderCallbacks);
                 return true;
             }
         });
 
         popup.show();
     }
+
+    private void showFilterLabel() {
+        switch (mCurrentFiltering) {
+            case ACTIVE_TASKS:
+                mFilteringLabelView.setText(getResources().getString(R.string.label_active));
+                break;
+            case COMPLETED_TASKS:
+                mFilteringLabelView.setText(getResources().getString(R.string.label_completed));
+                break;
+            default:
+                mFilteringLabelView.setText(getResources().getString(R.string.label_all));
+                break;
+        }
+    }
+
+    private LoaderManager.LoaderCallbacks<Cursor> mLoaderCallbacks =
+            new LoaderManager.LoaderCallbacks<Cursor>() {
+                @Override
+                public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                    String selection = null;
+                    String[] selectionArgs = null;
+                    switch (mCurrentFiltering) {
+                        case ACTIVE_TASKS:
+                            selection = TaskContact.IS_COMPLETED + " = ?";
+                            selectionArgs = new String[]{String.valueOf(Tasks.Task.NOT_COMPLETED)};
+                            break;
+                        case COMPLETED_TASKS:
+                            selection = TaskContact.IS_COMPLETED + " = ?";
+                            selectionArgs = new String[]{String.valueOf(Tasks.Task.COMPLETED)};
+                            break;
+                        default:
+                            break;
+                    }
+                    return new CursorLoader(getActivity(), Tasks.Task.CONTENT_URI,
+                            TaskDataSource.TASK_PROJECTION, selection, selectionArgs, null);
+                }
+
+                @Override
+                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                    List<Task> list = new ArrayList<>();
+                    while (data.moveToNext()) {
+                        Task task = new Task();
+                        String title = data.getString(data.getColumnIndex(TaskContact.TITLE));
+                        String desc = data.getString(data.getColumnIndex(TaskContact.DESCRIPTION));
+                        task.setTitle(title);
+                        task.setDescription(desc);
+                        list.add(task);
+                    }
+                    mListAdapter.replaceData(list);
+                    setUIStatus(mListAdapter.getCount() == 0 ? EMPTY : NORMAL);
+                }
+
+                @Override
+                public void onLoaderReset(Loader<Cursor> loader) {
+
+                }
+            };
 
     TasksAdapter.TaskItemListener mItemListener = new TasksAdapter.TaskItemListener() {
         @Override

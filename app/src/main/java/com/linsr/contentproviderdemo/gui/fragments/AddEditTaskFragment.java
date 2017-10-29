@@ -63,6 +63,7 @@ public class AddEditTaskFragment extends Fragment {
                 String title = mTitle.getText().toString();
                 String desc = mDescription.getText().toString();
                 mTaskManager.saveTask(mTaskId,title,desc);
+
                 getActivity().finish();
             }
         });

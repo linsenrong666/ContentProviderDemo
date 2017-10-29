@@ -8,6 +8,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.linsr.contentproviderdemo.R;
@@ -66,8 +68,8 @@ public class TasksActivity extends BaseActivity {
                                 // Do nothing, we're already on that screen
                                 break;
                             case R.id.statistics_navigation_menu_item:
-//                                Intent intent = new Intent(TasksActivity.this, StatisticsActivity.class);
-//                                startActivity(intent);
+                                Intent intent = new Intent(TasksActivity.this, StatisticsActivity.class);
+                                startActivity(intent);
                                 break;
                             default:
                                 break;

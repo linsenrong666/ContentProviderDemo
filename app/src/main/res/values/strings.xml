@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">ContentProviderDemo</string>
-
+    <string name="app_name">TO-DO</string>
 
     <string name="add_task">New TO-DO</string>
     <string name="edit_task">Edit TO-DO</string>

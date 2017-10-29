@@ -20,5 +20,5 @@ public interface TaskContact extends BaseColumns {
 
     String IS_COMPLETED = "is_completed";
 
-    String[] TASK_PROJECTION = {TASK_ID, TITLE, DESCRIPTION, IS_COMPLETED};
+
 }
