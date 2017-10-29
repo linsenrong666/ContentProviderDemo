@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 
 import com.linsr.contentproviderdemo.data.Tasks;
+import com.linsr.contentproviderdemo.data.contacts.TaskContact;
 import com.linsr.contentproviderdemo.model.Task;
 import com.linsr.contentproviderdemo.utils.DemoUtils;
 
@@ -57,4 +58,19 @@ public class TaskManager {
 
     }
 
+    public void completeTask(Task completedTask) {
+        ContentValues values = new ContentValues();
+        values.put(TaskContact.IS_COMPLETED, Tasks.Task.COMPLETED);
+        mContentResolver.update(Tasks.Task.CONTENT_URI, values,
+                TaskDataSource.TASK_ID + " = ?",
+                new String[]{completedTask.getId()});
+    }
+
+    public void activateTask(Task activatedTask) {
+        ContentValues values = new ContentValues();
+        values.put(TaskContact.IS_COMPLETED, Tasks.Task.NOT_COMPLETED);
+        mContentResolver.update(Tasks.Task.CONTENT_URI, values,
+                TaskDataSource.TASK_ID + " = ?",
+                new String[]{activatedTask.getId()});
+    }
 }

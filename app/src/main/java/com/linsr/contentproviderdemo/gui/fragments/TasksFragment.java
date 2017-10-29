@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.linsr.contentproviderdemo.R;
+import com.linsr.contentproviderdemo.base.BaseFragment;
 import com.linsr.contentproviderdemo.data.Tasks;
 import com.linsr.contentproviderdemo.data.contacts.TaskContact;
 import com.linsr.contentproviderdemo.gui.activities.AddEditTaskActivity;
@@ -43,7 +44,7 @@ import java.util.List;
  *
  * @author linsenrong on 2017/10/19 17:15
  */
-public class TasksFragment extends Fragment {
+public class TasksFragment extends BaseFragment {
 
     private static final int EMPTY = 0;
     private static final int ERROR = 1;
@@ -260,10 +261,13 @@ public class TasksFragment extends Fragment {
                     List<Task> list = new ArrayList<>();
                     while (data.moveToNext()) {
                         Task task = new Task();
-                        String title = data.getString(data.getColumnIndex(TaskContact.TITLE));
-                        String desc = data.getString(data.getColumnIndex(TaskContact.DESCRIPTION));
+                        String title = data.getString(data.getColumnIndex(TaskDataSource.TITLE));
+                        String desc = data.getString(data.getColumnIndex(TaskDataSource.DESCRIPTION));
                         task.setTitle(title);
                         task.setDescription(desc);
+                        task.setId(data.getString(data.getColumnIndex(TaskDataSource.TASK_ID)));
+                        task.setCompleted(data.getInt(data.getColumnIndex(TaskDataSource.IS_COMPLETED))
+                        == Tasks.Task.COMPLETED);
                         list.add(task);
                     }
                     mListAdapter.replaceData(list);
@@ -284,12 +288,13 @@ public class TasksFragment extends Fragment {
 
         @Override
         public void onCompleteTaskClick(Task completedTask) {
-//            mPresenter.completeTask(completedTask);
+            mTaskManager.completeTask(completedTask);
+            showMessage(getString(R.string.task_marked_complete));
         }
 
         @Override
         public void onActivateTaskClick(Task activatedTask) {
-//            mPresenter.activateTask(activatedTask);
+            mTaskManager.activateTask(activatedTask);
         }
     };
 
